@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+  def globalConfiguration = rootProject.ext
+
+  compileSdkVersion globalConfiguration.compileSdkVersion
+  buildToolsVersion globalConfiguration.buildToolsVersion
+  defaultConfig {
+    applicationId globalConfiguration.androidApplicationId
+    minSdkVersion globalConfiguration.minSdkVersion
+    targetSdkVersion globalConfiguration.targetSdkVersion
+    versionCode globalConfiguration.androidVersionCode
+    versionName globalConfiguration.androidVersionName
+    testInstrumentationRunner globalConfiguration.testInstrumentationRunner
+    externalNativeBuild {
+      cmake {
+        cppFlags ""
+      }
+    }
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+}
+
+dependencies {
+  def appDependencies = rootProject.ext.appDependencies
+  def appTestDependencies = rootProject.ext.appTestDependencies
+  def developmentDependencies = rootProject.ext.developmentDependencies
+
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+
+  androidTestCompile(appTestDependencies.espresso, {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+  testCompile appTestDependencies.junit
+
+  compile appDependencies.appCompatV7
+  compile developmentDependencies.leakCanary
+}
