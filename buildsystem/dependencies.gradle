@@ -73,6 +73,15 @@ ext {
       junit               : "junit:junit:${jUnitVersion}"
   ]
 
+  libUtilsDependencies = [
+      appCompatV7         : "com.android.support:appcompat-v7:${supportVersion}",
+      design             : "com.android.support:design:${supportVersion}"
+  ]
+
+  libUtilsTestDependencies = [
+      junit               : "junit:junit:${jUnitVersion}"
+  ]
+
   developmentDependencies = [
       leakCanary          : "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}"
   ]
