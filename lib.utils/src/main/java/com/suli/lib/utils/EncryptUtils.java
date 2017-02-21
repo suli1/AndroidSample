@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import static com.suli.lib.utils.ConvertUtils.bytes2HexString;
@@ -721,7 +722,7 @@ public class EncryptUtils {
    * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
    * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
    */
-  public static String AES_Transformation = "AES/ECB/NoPadding";
+  public static String AES_Transformation = "AES/CBC/PKCS5Padding";
   private static final String AES_Algorithm = "AES";
 
   /**
@@ -747,17 +748,6 @@ public class EncryptUtils {
   }
 
   /**
-   * AES加密
-   *
-   * @param data 明文
-   * @param key 16、24、32字节秘钥
-   * @return 密文
-   */
-  public static byte[] encryptAES(byte[] data, byte[] key) {
-    return desTemplate(data, key, AES_Algorithm, AES_Transformation, true);
-  }
-
-  /**
    * AES解密Base64编码密文
    *
    * @param data Base64编码密文
@@ -777,17 +767,6 @@ public class EncryptUtils {
    */
   public static byte[] decryptHexStringAES(String data, byte[] key) {
     return decryptAES(hexString2Bytes(data), key);
-  }
-
-  /**
-   * AES解密
-   *
-   * @param data 密文
-   * @param key 16、24、32字节秘钥
-   * @return 明文
-   */
-  public static byte[] decryptAES(byte[] data, byte[] key) {
-    return desTemplate(data, key, AES_Algorithm, AES_Transformation, false);
   }
 
   /**
@@ -814,6 +793,67 @@ public class EncryptUtils {
       return null;
     }
   }
+
+  /**
+   * AES加密
+   *
+   * @param data 明文
+   * @param key 16、24、32字节秘钥
+   * @return 密文
+   */
+  public static byte[] encryptAES(byte[] data, byte[] key) {
+    return aesTemplate(data, key, AES_Transformation, Cipher.ENCRYPT_MODE);
+  }
+
+  /**
+   * AES解密
+   *
+   * @param data 密文
+   * @param key 16、24、32字节秘钥
+   * @return 明文
+   */
+  public static byte[] decryptAES(byte[] data, byte[] key) {
+    return aesTemplate(data, key, AES_Transformation, Cipher.DECRYPT_MODE);
+  }
+
+  private static byte[] AES_IV = new byte[] {
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+  };
+
+  private static byte[] aesTemplate(byte[] data, byte[] password, String transformation, int mode) {
+    try {
+      // 对密钥进行处理-E
+      IvParameterSpec zeroIv = new IvParameterSpec(AES_IV);
+      SecretKeySpec key = new SecretKeySpec(password, AES_Algorithm);
+      //KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+      //keyGenerator.init(128, new SecureRandom(password));
+      //SecretKey key = keyGenerator.generateKey();
+      Cipher cipher = Cipher.getInstance(transformation);
+      cipher.init(mode, key, zeroIv);
+      return cipher.doFinal(data);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static final int ENCRYPT = 0;
+  public static final int DECRYPT = 1;
+
+  /**
+   * 对数据进行AES加密
+   *
+   * @param data 明文
+   */
+  public native static byte[] crypt(byte[] data, byte[] key, long time, int mode);
+
+  /**
+   *
+   * @param path
+   * @param time
+   * @return
+   */
+  public native static byte[] read(String path, long time);
 
   private final static String MSG_ENCRYPT =
       "ICG7h2s5BV0pP3aseoNqjyaU62g39ta4xuEbW+tLlfp+ZsuuabyEJozCpFZBmkHq+goGrjPTijJ6KjZ96BuUwsPYtfzh5Xiakk5XnqpO9xMBWzhKBmW4w/e+6aIlN/2KOPL2MDFVWFhsVQgUhl3mdgojiZZ5UYfijZrZob1Xsls/dFHaE0K8DBDDs0uqP6FOJdLVfo/dVz18m5AeQx8r50/8bPFV2vq+W/mkSrRTADA8HLEdeP7SlXF1C2CXK5MR+o/3R1mr4tvyuTx5Zp98nRKDa55gMIvfJt4G5vBOU2DGwfJJLscchlJtgYsnuZiD9hmq6aXTiTGAOy+XXeqKA6sa9r2zgye4hlvvMZwaw+o=";

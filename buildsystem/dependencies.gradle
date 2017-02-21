@@ -79,6 +79,7 @@ ext {
   ]
 
   libUtilsTestDependencies = [
+      espresso            : "com.android.support.test.espresso:espresso-core:${espressoVersion}",
       junit               : "junit:junit:${jUnitVersion}"
   ]
 
