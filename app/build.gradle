@@ -37,6 +37,8 @@ dependencies {
   def appTestDependencies = rootProject.ext.appTestDependencies
   def developmentDependencies = rootProject.ext.developmentDependencies
 
+  compile project(':lib.utils')
+
   compile fileTree(dir: 'libs', include: ['*.jar'])
 
   androidTestCompile(appTestDependencies.espresso, {

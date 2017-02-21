@@ -80,7 +80,7 @@ public class AESUtils {
     return null;
   }
 
-  private static final byte[] KEY_VI = { 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8 };
+  private static final byte[] KEY_VI = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6 };
   private static final String bm = "UTF-8";
 
   public static byte[] encryptWithVi(byte[] content, byte[] password) {
@@ -88,6 +88,9 @@ public class AESUtils {
       // 对密钥进行处理-E
       IvParameterSpec zeroIv = new IvParameterSpec(password);
       SecretKeySpec key = new SecretKeySpec(password, "AES");
+      //KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+      //keyGenerator.init(128, new SecureRandom(password));
+      //SecretKey key = keyGenerator.generateKey();
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
       cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
       return cipher.doFinal(content);
@@ -102,6 +105,9 @@ public class AESUtils {
       // 对密钥进行处理-E
       IvParameterSpec zeroIv = new IvParameterSpec(password);
       SecretKeySpec key = new SecretKeySpec(password, "AES");
+      //KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+      //keyGenerator.init(128, new SecureRandom(password));
+      //SecretKey key = keyGenerator.generateKey();
       Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
       cipher.init(Cipher.DECRYPT_MODE, key, zeroIv);
       return cipher.doFinal(encrypted);
