@@ -48,6 +48,13 @@ int aes_encrypt_cbc(const BYTE in[],          // Plaintext
                     int keysize,              // Bit length of the key, 128, 192, or 256
                     const BYTE iv[]);         // IV, must be AES_BLOCK_SIZE bytes long
 
+int aes_decrypt_cbc(const BYTE in[],          // Ciphertext
+                    size_t in_len,            // Must be a multiple of AES_BLOCK_SIZE
+                    BYTE out[],               // Plaintext
+                    const WORD key[],         // From the key setup
+                    int keysize,              // Bit length of the key, 128, 192 or 256
+                    const BYTE iv[]);         // IV, must be AES_BLOCK_SIZE bytes long
+
 // Only output the CBC-MAC of the input.
 int aes_encrypt_cbc_mac(const BYTE in[],      // plaintext
                         size_t in_len,        // Must be a multiple of AES_BLOCK_SIZE
@@ -98,18 +105,19 @@ int aes_encrypt_ccm(const BYTE plaintext[],              // IN  - Plaintext.
 // this, call with mac_auth = NULL. The proper proceedure is to decrypt with
 // authentication enabled (mac_auth != NULL) and make a second call to that
 // ignores authentication explicitly if the first call failes.
-int aes_decrypt_ccm(const BYTE ciphertext[],             // IN  - Ciphertext, the concatination of encrypted plaintext and MAC.
-                    WORD ciphertext_len,                 // IN  - Ciphertext length in bytes.
-                    const BYTE assoc[],                  // IN  - The Associated Data, required for authentication.
-                    unsigned short assoc_len,            // IN  - Associated Data length in bytes.
-                    const BYTE nonce[],                  // IN  - The Nonce to use for decryption, same one as for encryption.
-                    unsigned short nonce_len,            // IN  - Nonce length in bytes.
-                    BYTE plaintext[],                    // OUT - The plaintext that was decrypted. Will need to be large enough to hold ciphertext_len - mac_len.
-                    WORD *plaintext_len,                 // OUT - Length in bytes of the output plaintext, always ciphertext_len - mac_len .
-                    WORD mac_len,                        // IN  - The length of the MAC that was calculated.
-                    int *mac_auth,                       // OUT - TRUE if authentication succeeded, FALSE if it did not. NULL pointer will ignore the authentication.
-                    const BYTE key[],                    // IN  - The AES key for decryption.
-                    int keysize);                        // IN  - The length of the key in BITS. Valid values are 128, 192, 256.
+int aes_decrypt_ccm(
+        const BYTE ciphertext[],             // IN  - Ciphertext, the concatination of encrypted plaintext and MAC.
+        WORD ciphertext_len,                 // IN  - Ciphertext length in bytes.
+        const BYTE assoc[],                  // IN  - The Associated Data, required for authentication.
+        unsigned short assoc_len,            // IN  - Associated Data length in bytes.
+        const BYTE nonce[],                  // IN  - The Nonce to use for decryption, same one as for encryption.
+        unsigned short nonce_len,            // IN  - Nonce length in bytes.
+        BYTE plaintext[],                    // OUT - The plaintext that was decrypted. Will need to be large enough to hold ciphertext_len - mac_len.
+        WORD *plaintext_len,                 // OUT - Length in bytes of the output plaintext, always ciphertext_len - mac_len .
+        WORD mac_len,                        // IN  - The length of the MAC that was calculated.
+        int *mac_auth,                       // OUT - TRUE if authentication succeeded, FALSE if it did not. NULL pointer will ignore the authentication.
+        const BYTE key[],                    // IN  - The AES key for decryption.
+        int keysize);                        // IN  - The length of the key in BITS. Valid values are 128, 192, 256.
 
 
 #endif   // AES_H

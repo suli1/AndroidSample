@@ -823,7 +823,7 @@ public class EncryptUtils {
   private static byte[] aesTemplate(byte[] data, byte[] password, String transformation, int mode) {
     try {
       // 对密钥进行处理-E
-      IvParameterSpec zeroIv = new IvParameterSpec(AES_IV);
+      IvParameterSpec zeroIv = new IvParameterSpec(password);
       SecretKeySpec key = new SecretKeySpec(password, AES_Algorithm);
       //KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
       //keyGenerator.init(128, new SecureRandom(password));
