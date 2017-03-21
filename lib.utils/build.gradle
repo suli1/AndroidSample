@@ -46,4 +46,5 @@ dependencies {
   compile libUtilsDependencies.design
 
   testCompile libUtilsTestDependencies.junit
+  androidTestCompile libUtilsTestDependencies.systemRules
 }
