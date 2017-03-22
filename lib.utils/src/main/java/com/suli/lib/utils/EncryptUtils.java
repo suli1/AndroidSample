@@ -841,9 +841,13 @@ public class EncryptUtils {
   public static final int DECRYPT = 1;
 
   /**
-   * 对数据进行AES加密
+   * 对数据进行AES加解密
    *
-   * @param data 明文
+   * @param data 明文/密文
+   * @param key 密钥
+   * @param time 时间(暂时未使用）
+   * @param mode {@value ENCRYPT} : 加密  {@value DECRYPT} : 解密
+   * @return 密文/明文
    */
   public native static byte[] crypt(byte[] data, byte[] key, long time, int mode);
 
@@ -854,17 +858,4 @@ public class EncryptUtils {
    * @return
    */
   public native static byte[] read(String path, long time);
-
-  private final static String MSG_ENCRYPT =
-      "ICG7h2s5BV0pP3aseoNqjyaU62g39ta4xuEbW+tLlfp+ZsuuabyEJozCpFZBmkHq+goGrjPTijJ6KjZ96BuUwsPYtfzh5Xiakk5XnqpO9xMBWzhKBmW4w/e+6aIlN/2KOPL2MDFVWFhsVQgUhl3mdgojiZZ5UYfijZrZob1Xsls/dFHaE0K8DBDDs0uqP6FOJdLVfo/dVz18m5AeQx8r50/8bPFV2vq+W/mkSrRTADA8HLEdeP7SlXF1C2CXK5MR+o/3R1mr4tvyuTx5Zp98nRKDa55gMIvfJt4G5vBOU2DGwfJJLscchlJtgYsnuZiD9hmq6aXTiTGAOy+XXeqKA6sa9r2zgye4hlvvMZwaw+o=";
-  private final static String MSG =
-      "accountId=15586906&curVer=5.0.1&mobile=3UWLdbzJxnRftOXzUrL0CEieNy5Zr3ktUsRlDFd6NW5WC0SwBoN/d6c0F30fxw6f1M6t8M7bdb8WLOvLkdb7DN+nc/X1JUw3KX7CTEwf6ekVj1oyrgc83kB4PMZRLMPIKKjry4SzgyhyRB0HbpOJC/cOa+Glqnu9HMC7CgYnPO4=&os=IOS&token=ab31c4a9d5ef4bee8841e69dcd329113";
-  private final static String KEY = "15586906ab31c4a9";
-
-  public static void main(String[] args) {
-    String msg = new String(EncryptUtils.encryptAES(MSG.getBytes(), KEY.getBytes()));
-    System.out.println("EncryptUtils encryptWithVi:" + msg);
-    //msg = new String(EncryptUtils.decryptAES(ConvertUtils.hexString2Bytes(msg), ConvertUtils.hexString2Bytes(KEY)));
-    //System.out.println("EncryptUtils decryptWithVi:" + msg);
-  }
 }

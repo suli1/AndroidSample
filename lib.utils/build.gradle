@@ -47,4 +47,5 @@ dependencies {
 
   testCompile libUtilsTestDependencies.junit
   testCompile libUtilsTestDependencies.systemRules
+  testCompile libUtilsTestDependencies.robolectric
 }

@@ -1,6 +1,7 @@
 package com.suli.libutils;
 
 import com.suli.lib.utils.TimeUtils;
+import java.util.Date;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,5 +28,17 @@ public class TimeUtilsTest {
   @Test public void millis2StringTest() {
     System.out.print("test");
     Assert.assertEquals(TimeUtils.millis2String(timestamp), date);
+    Assert.assertEquals(TimeUtils.millis2String(timestamp, "yyyy-MM-dd HH:mm:ss"), date);
+  }
+
+  @Test public void string2MillisTest() {
+    Assert.assertEquals(TimeUtils.string2Millis(date), timestamp);
+    Assert.assertEquals(TimeUtils.string2Millis(date, "yyyy-MM-dd HH:mm:ss"), timestamp);
+    Assert.assertEquals(TimeUtils.string2Millis(date, "yyyy-MM-dd HH:mm:aa"), -1);
+  }
+
+  @Test public void string2DateTest() {
+    Date d = new Date(timestamp);
+    Assert.assertEquals(TimeUtils.string2Date(date), d);
   }
 }
