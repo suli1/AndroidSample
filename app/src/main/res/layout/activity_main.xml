@@ -15,22 +15,22 @@
 
   <TextView
       android:id="@+id/tv_message"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="Hello World!"
       />
 
   <Button
       android:id="@+id/btn_crash"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="crash test"
       />
 
   <Button
-      android:id="@+id/btn_aes"
-      android:layout_width="wrap_content"
+      android:id="@+id/btn_webview"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="AES"
+      android:text="go to webview"
       />
 </LinearLayout>

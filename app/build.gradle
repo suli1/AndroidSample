@@ -40,5 +40,6 @@ dependencies {
   testCompile appTestDependencies.junit
 
   compile appDependencies.appCompatV7
+  compile appDependencies.butterKnife
   compile developmentDependencies.leakCanary
 }
