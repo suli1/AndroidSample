@@ -5,11 +5,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -25,6 +33,10 @@ import static com.suli.lib.utils.ConvertUtils.hexString2Bytes;
  * </pre>
  */
 public class EncryptUtils {
+
+  static {
+    System.loadLibrary("utils-lib");
+  }
 
   private EncryptUtils() {
     throw new UnsupportedOperationException("u can't instantiate me...");
@@ -722,7 +734,7 @@ public class EncryptUtils {
    * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
    * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
    */
-  public static String AES_Transformation = "AES/CBC/PKCS5Padding";
+  private static final String AES_Transformation = "AES/CBC/PKCS5Padding";
   private static final String AES_Algorithm = "AES";
 
   /**
@@ -825,9 +837,6 @@ public class EncryptUtils {
       // 对密钥进行处理-E
       IvParameterSpec zeroIv = new IvParameterSpec(password);
       SecretKeySpec key = new SecretKeySpec(password, AES_Algorithm);
-      //KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-      //keyGenerator.init(128, new SecureRandom(password));
-      //SecretKey key = keyGenerator.generateKey();
       Cipher cipher = Cipher.getInstance(transformation);
       cipher.init(mode, key, zeroIv);
       return cipher.doFinal(data);
@@ -858,4 +867,75 @@ public class EncryptUtils {
    * @return
    */
   public native static byte[] read(String path, long time);
+
+  /************************ RSA加密相关 ***********************/
+  /**
+   * RSA转变
+   * <p>法算法名称/加密模式/填充方式</p>
+   * <p>加密模式有：电子密码本模式ECB、加密块链模式CBC、加密反馈模式CFB、输出反馈模式OFB</p>
+   * <p>填充方式有：NoPadding、ZerosPadding、PKCS5Padding</p>
+   */
+  private static final String RSA_Transformation = "RSA/ECB/PKCS1Padding";
+  private static final String RSA_Algorithm = "RSA";
+
+  /**
+   * RSA公钥加密
+   * RSA/ECB/PKCS1Padding
+   *
+   * @param data 明文
+   * @param key 公钥
+   * @return 密文
+   */
+  public static String encryptBase64RSAByPublicKey(String data, String key) {
+    return EncodeUtils.base64Encode2String(
+        rsaTemplate(data.getBytes(), EncodeUtils.base64Decode(key), RSA_Algorithm,
+            RSA_Transformation, true));
+  }
+
+  /**
+   * RSA公钥解密
+   */
+  public static String decryptBase64RSAByPublicKey(String data, String key) {
+    return EncodeUtils.base64Encode2String(
+        rsaTemplate(EncodeUtils.base64Decode(data), EncodeUtils.base64Decode(key), RSA_Algorithm,
+            RSA_Transformation, false));
+  }
+
+  public static String decryptBase64RSAByPrivateKey(String data, String key) {
+    try {
+      byte[] keyBytes = EncodeUtils.base64Decode(key);
+      PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
+      KeyFactory keyFactory = KeyFactory.getInstance(RSA_Algorithm);
+      Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
+      Cipher cipher = Cipher.getInstance(RSA_Transformation);
+      cipher.init(Cipher.DECRYPT_MODE, privateK);
+      return new String(cipher.doFinal(EncodeUtils.base64Decode(data)));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static byte[] rsaTemplate(byte[] data, byte[] key, String algorithm, String transformation,
+      boolean isEncrypt) {
+    X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(key);
+    try {
+      KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+      Key publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+      Cipher cipher = Cipher.getInstance(transformation);
+      cipher.init(isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE, publicKey);
+      return cipher.doFinal(data);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    } catch (InvalidKeySpecException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchPaddingException e) {
+      throw new RuntimeException(e);
+    } catch (InvalidKeyException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalBlockSizeException e) {
+      throw new RuntimeException(e);
+    } catch (BadPaddingException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
