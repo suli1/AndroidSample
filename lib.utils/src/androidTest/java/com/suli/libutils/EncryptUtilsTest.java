@@ -22,6 +22,9 @@ import org.junit.runner.RunWith;
   }
 
   @Test public void sha1Test() {
+    String data = "d=d&c=c&b=b&a=aa1459132152034Jakarta Commons-HttpClient/3.0";
+    String result = "4A90CB6A06962687DEABA9798CBFE4610BCE837B";
+    Assert.assertEquals(result, EncryptUtils.encryptSHA1ToString(data));
 
   }
 
@@ -90,6 +93,8 @@ import org.junit.runner.RunWith;
         EncryptUtils.crypt(MSG.getBytes(), KEY.getBytes(), System.currentTimeMillis(),
             EncryptUtils.ENCRYPT);
     Assert.assertEquals(MSG_ENCRYPT, EncodeUtils.base64Encode2String(msgNative));
+
+    Assert.assertEquals(MSG, );
 
     Assert.assertEquals(new String(
         EncryptUtils.crypt(msgNative, KEY.getBytes(), System.currentTimeMillis(),

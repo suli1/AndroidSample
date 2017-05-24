@@ -849,6 +849,23 @@ public class EncryptUtils {
   public static final int ENCRYPT = 0;
   public static final int DECRYPT = 1;
 
+  public static String encryptBase64AESNative(String data, String key) {
+    byte[] encrypt = crypt(data.getBytes(), key.getBytes(), System.currentTimeMillis(), ENCRYPT);
+    if (encrypt != null) {
+      return EncodeUtils.base64Encode2String(encrypt);
+    }
+    return "";
+  }
+
+  public static String decryptBase64AESNative(String data, String key) {
+    byte[] decrypt =
+        crypt(EncodeUtils.base64Decode(data), key.getBytes(), System.currentTimeMillis(), DECRYPT);
+    if (decrypt != null) {
+      return new String(decrypt);
+    }
+    return "";
+  }
+
   /**
    * 对数据进行AES加解密
    *
