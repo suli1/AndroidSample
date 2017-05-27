@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 /**
  * <pre>
@@ -68,7 +69,7 @@ public class ConvertUtils {
       hexString = "0" + hexString;
       len = len + 1;
     }
-    char[] hexBytes = hexString.toUpperCase().toCharArray();
+    char[] hexBytes = hexString.toUpperCase(Locale.getDefault()).toCharArray();
     byte[] ret = new byte[len >> 1];
     for (int i = 0; i < len; i += 2) {
       ret[i >> 1] = (byte) (hex2Dec(hexBytes[i]) << 4 | hex2Dec(hexBytes[i + 1]));

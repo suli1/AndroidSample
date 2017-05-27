@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <pre>
@@ -572,7 +573,7 @@ public class FileUtils {
     File[] files = dir.listFiles();
     if (files != null && files.length != 0) {
       for (File file : files) {
-        if (file.getName().toUpperCase().endsWith(suffix.toUpperCase())) {
+        if (file.getName().toUpperCase(Locale.US).endsWith(suffix.toUpperCase())) {
           list.add(file);
         }
       }
@@ -606,7 +607,7 @@ public class FileUtils {
     File[] files = dir.listFiles();
     if (files != null && files.length != 0) {
       for (File file : files) {
-        if (file.getName().toUpperCase().endsWith(suffix.toUpperCase())) {
+        if (file.getName().toUpperCase(Locale.US).endsWith(suffix.toUpperCase())) {
           list.add(file);
         }
         if (file.isDirectory()) {

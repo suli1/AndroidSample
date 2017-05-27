@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
@@ -351,7 +352,9 @@ public class PhoneUtils {
       // 2.2设置xml文件保存的路径
       // os : 保存的位置
       // encoding : 编码格式
-      xmlSerializer.setOutput(new FileOutputStream(new File("/mnt/sdcard/backupsms.xml")), "utf-8");
+      xmlSerializer.setOutput(new FileOutputStream(new File(
+              Environment.getExternalStorageDirectory().getPath() + File.separator + "backupsms.xml")),
+          "utf-8");
       // 2.3设置头信息
       // standalone : 是否独立保存
       xmlSerializer.startDocument("utf-8", true);
@@ -390,6 +393,8 @@ public class PhoneUtils {
       xmlSerializer.flush();
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      cursor.close();
     }
   }
 }

@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <pre>
@@ -96,7 +97,8 @@ public class AppUtils {
     String command = "LD_LIBRARY_PATH=/vendor/lib:/system/lib pm install " + filePath;
     ShellUtils.CommandResult commandResult =
         ShellUtils.execCmd(command, !isSystemApp(Utils.getContext()), true);
-    return commandResult.successMsg != null && commandResult.successMsg.toLowerCase()
+    return commandResult.successMsg != null && commandResult.successMsg.toLowerCase(
+            Locale.getDefault())
         .contains("success");
   }
 
@@ -141,7 +143,7 @@ public class AppUtils {
         + packageName;
     ShellUtils.CommandResult commandResult =
         ShellUtils.execCmd(command, !isSystemApp(context), true);
-    return commandResult.successMsg != null && commandResult.successMsg.toLowerCase()
+    return commandResult.successMsg != null && commandResult.successMsg.toLowerCase(Locale.getDefault())
         .contains("success");
   }
 

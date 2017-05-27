@@ -2,13 +2,11 @@ package com.suli.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.suli.lib.utils.EncryptUtils;
 import com.suli.lib.utils.LogUtils;
 import com.suli.lib.utils.RandomUtils;
-
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
   private final static String TAG = MainActivity.class.getSimpleName();

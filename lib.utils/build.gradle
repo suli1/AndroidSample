@@ -20,6 +20,12 @@ android {
       }
     }
   }
+
+  lintOptions {
+    abortOnError false
+  }
+
+
   buildTypes {
     release {
       minifyEnabled false
@@ -49,3 +55,16 @@ dependencies {
   testCompile libUtilsTestDependencies.systemRules
   testCompile libUtilsTestDependencies.robolectric
 }
+
+task deleteJar(type: Delete) {
+  delete 'libs/utils.jar'
+}
+
+task createJar(type: Copy) {
+  from('build/intermediates/bundles/default/')
+  into('libs/')
+  include('classes.jar')
+  rename('classes.jar', 'utils.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
