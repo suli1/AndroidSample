@@ -1,14 +1,14 @@
 package com.suli.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import com.qihoo360.replugin.RePlugin;
 import com.suli.lib.utils.EncryptUtils;
 import com.suli.lib.utils.LogUtils;
 import com.suli.lib.utils.RandomUtils;
-
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
   private final static String TAG = MainActivity.class.getSimpleName();
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
+
+    //RePlugin.install("/sdcard/app-debug.apk");
   }
 
   @OnClick(R.id.btn_crash) void onClickCrash() {
@@ -32,11 +34,9 @@ public class MainActivity extends AppCompatActivity {
     startActivity(WebViewActivity.newIntent(this, null));
   }
 
-  @OnClick(R.id.btn_encrypt)
-  void onClickEncryptTest() {
+  @OnClick(R.id.btn_encrypt) void onClickEncryptTest() {
     new Thread(new Runnable() {
-      @Override
-      public void run() {
+      @Override public void run() {
 
         int count = 5000;
         int aesFailed = 0;
@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < count; i++) {
           String data = RandomUtils.getRandomString((int) (Math.random() * 100));
 
-          String aesEncrypt = new String(EncryptUtils.encryptAES2Base64(data.getBytes(), key.getBytes()));
+          String aesEncrypt =
+              new String(EncryptUtils.encryptAES2Base64(data.getBytes(), key.getBytes()));
 
           try {
             Thread.sleep(10);
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
           }
 
-          String aesDecrypt = new String(EncryptUtils.decryptBase64AES(aesEncrypt.getBytes(), key.getBytes()));
+          String aesDecrypt =
+              new String(EncryptUtils.decryptBase64AES(aesEncrypt.getBytes(), key.getBytes()));
 
           if (!data.equals(aesDecrypt)) {
             LogUtils.d(i + ":aes failed:" + data);
@@ -62,5 +64,15 @@ public class MainActivity extends AppCompatActivity {
         LogUtils.d("Count:" + count + ", aes failed:" + aesFailed);
       }
     }).start();
+  }
+
+  @OnClick(R.id.btn_goto_plugin_app) void onClickGotoPluginApp() {
+
+    Intent intent = RePlugin.createIntent("demo", "com.suli.myapplication.MainActivity");
+    RePlugin.startActivity(this, intent);
+  }
+
+  @OnClick(R.id.btn_goto_plugin_demo1) void onClickGotoPluginDemo1() {
+    RePlugin.startActivity(MainActivity.this, RePlugin.createIntent("demo1", "com.qihoo360.replugin.sample.demo1.MainActivity"));
   }
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'replugin-host-gradle'
 
 android {
   def globalConfiguration = rootProject.ext
@@ -31,8 +32,10 @@ dependencies {
   def developmentDependencies = rootProject.ext.developmentDependencies
 
   compile project(':lib.utils')
+  compile project(':replugin-host-lib')
 
   compile fileTree(dir: 'libs', include: ['*.jar'])
+
 
   androidTestCompile(appTestDependencies.espresso, {
     exclude group: 'com.android.support', module: 'support-annotations'
@@ -41,5 +44,6 @@ dependencies {
 
   compile appDependencies.appCompatV7
   compile appDependencies.butterKnife
-  compile developmentDependencies.leakCanary
+  //  compile developmentDependencies.leakCanary
+//  compile 'com.qihoo360.replugin:replugin-host-lib:2.1.4'
 }
