@@ -73,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @OnClick(R.id.btn_goto_plugin_demo1) void onClickGotoPluginDemo1() {
-    RePlugin.startActivity(MainActivity.this, RePlugin.createIntent("demo1", "com.qihoo360.replugin.sample.demo1.MainActivity"));
+    RePlugin.startActivity(MainActivity.this,
+        RePlugin.createIntent("demo1", "com.qihoo360.replugin.sample.demo1.MainActivity"));
+  }
+
+  @OnClick(R.id.btn_goto_plugin_share) void onClickGotoPluginShare() {
+    RePlugin.startActivity(MainActivity.this,
+        RePlugin.createIntent("share", "com.paem.plugin.share.MainActivity"));
   }
 }
