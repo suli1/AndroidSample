@@ -91,12 +91,6 @@ if(CMAKE_COMPILER_IS_CLANG)
     set(CMAKE_C_FLAGS_CHECK       "-Werror -Os")
 endif(CMAKE_COMPILER_IS_CLANG)
 
-if(MSVC)
-    # Strictest warnings, and treat as errors
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
-endif(MSVC)
-
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG)
         set(CMAKE_SHARED_LINKER_FLAGS "--coverage")
@@ -121,46 +115,33 @@ endif(ENABLE_ZLIB_SUPPORT)
 add_subdirectory(library)
 add_subdirectory(include)
 
-if(ENABLE_PROGRAMS)
-    add_subdirectory(programs)
-endif()
 
 ADD_CUSTOM_TARGET(apidoc
     COMMAND doxygen doxygen/mbedtls.doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-if(ENABLE_TESTING)
-    enable_testing()
+add_library( # Sets the name of the library.
+             security-lib
 
-    add_subdirectory(tests)
+             # Sets the library as a shared library.
+             SHARED
 
-    # additional convenience targets for Unix only
-    if(UNIX)
+             # Provides a relative path to your source file(s).
+             # Associated headers in the same location as their source
+             # file are automatically included.
+             security.c
+             )
 
-        ADD_CUSTOM_TARGET(covtest
-            COMMAND make test
-            COMMAND programs/test/selftest
-            COMMAND tests/compat.sh
-            COMMAND tests/ssl-opt.sh
-        )
+find_library( # Sets the name of the path variable.
+              log-lib
 
-        ADD_CUSTOM_TARGET(lcov
-            COMMAND rm -rf Coverage
-            COMMAND lcov --capture --initial --directory library/CMakeFiles/mbedtls.dir -o files.info
-            COMMAND lcov --capture --directory library/CMakeFiles/mbedtls.dir -o tests.info
-            COMMAND lcov --add-tracefile files.info --add-tracefile tests.info -o all.info
-            COMMAND lcov --remove all.info -o final.info '*.h'
-            COMMAND gendesc tests/Descriptions.txt -o descriptions
-            COMMAND genhtml --title "mbed TLS" --description-file descriptions --keep-descriptions --legend --no-branch-coverage -o Coverage final.info
-            COMMAND rm -f files.info tests.info all.info final.info descriptions
-        )
+              # Specifies the name of the NDK library that
+              # you want CMake to locate.
+              log )
 
-        ADD_CUSTOM_TARGET(memcheck
-            COMMAND sed -i.bak s+/usr/bin/valgrind+`which valgrind`+ DartConfiguration.tcl
-            COMMAND ctest -O memcheck.log -D ExperimentalMemCheck
-            COMMAND tail -n1 memcheck.log | grep 'Memory checking results:' > /dev/null
-            COMMAND rm -f memcheck.log
-            COMMAND mv DartConfiguration.tcl.bak DartConfiguration.tcl
-        )
-    endif(UNIX)
-endif()
+target_link_libraries( # Specifies the target library.
+                       security-lib
+
+                       # Links the target library to the log library
+                       # included in the NDK.
+                       ${log-lib} )
