@@ -8,6 +8,8 @@
 
 #include <stddef.h>
 
+#define AES_BLOCK_SIZE 16
+
 int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *input,
                    const int inputLen, const unsigned char *key, const int keyLen);
 

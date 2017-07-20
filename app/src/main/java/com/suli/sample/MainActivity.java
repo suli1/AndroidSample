@@ -8,7 +8,6 @@ import com.suli.lib.security.Constant;
 import com.suli.lib.security.SecurityUtils;
 import com.suli.lib.utils.EncryptUtils;
 import com.suli.lib.utils.LogUtils;
-import com.suli.lib.utils.RandomUtils;
 
 public class MainActivity extends AppCompatActivity {
   private final static String TAG = MainActivity.class.getSimpleName();

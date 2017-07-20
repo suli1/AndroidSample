@@ -9,6 +9,7 @@
 #include <mbedtls/error.h>
 #include <mbedtls/aes.h>
 #include "Log.h"
+#include "encrypt.h"
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t i;
@@ -68,35 +69,29 @@ int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
 
     mbedtls_aes_context ctx;
     mbedtls_aes_init(&ctx);
-    mbedtls_aes_setkey_enc(&ctx, key, keyLen * sizeof(unsigned char));
+    mbedtls_aes_setkey_enc(&ctx, key, keyLen * 8);
+
     unsigned char iv[16];
     memcpy(iv, key, sizeof(iv));
 
-    int padding;
-    if (inputLen % 16 == 0) {
-        padding = 16;
-    } else {
-        padding = 16 - inputLen % 16;
-    }
+    int padding = AES_BLOCK_SIZE - inputLen % AES_BLOCK_SIZE;
+    *outputLen = inputLen + padding;
+
+    unsigned char *src = (unsigned char *) malloc(*outputLen);
+    memcpy(src, input, inputLen);
+    memset(src + inputLen, padding, padding);
+
     *output = (unsigned char *) malloc(*outputLen);
+    memset(*output, 0, *outputLen);
 
-    int ret;
-    for (int i = 0; i < inputLen + padding; i += 16) {
-        unsigned char tmp[16];
-        memcpy(tmp, input + i, 16);
-        int left = inputLen + padding - i;
-        if (left <= 16) {
-            memset(tmp + (16 - padding), padding, padding);
-        }
-        ret = mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_ENCRYPT, 16, iv, tmp,
-                                    *output + i);
-        if (ret != 0) {
-            LOGE("AES encrypt error!");
-            printError(ret);
-            break;
-        }
+    int ret = mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_ENCRYPT, *outputLen, iv, src,
+                                    *output);
+    if (ret != 0) {
+        LOGE("AES encrypt error!");
+        printError(ret);
     }
 
+    free(src);
     mbedtls_aes_free(&ctx);
 
     return ret;
@@ -104,36 +99,26 @@ int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
 
 int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
                   const int inputLen, const unsigned char *key, const int keyLen) {
-    if (keyLen != 16 || inputLen % 16) {
+    if (keyLen != 16 || inputLen % AES_BLOCK_SIZE) {
         return -1;
     }
+    int padding = *(input + inputLen - 1);
 
     mbedtls_aes_context ctx;
     mbedtls_aes_init(&ctx);
-    mbedtls_aes_setkey_enc(&ctx, key, keyLen * sizeof(unsigned char));
+    mbedtls_aes_setkey_enc(&ctx, key, keyLen * 8);
     unsigned char iv[16];
     memcpy(iv, key, sizeof(iv));
 
     *output = (unsigned char *) malloc(inputLen);
 
-    int ret;
-    for (int i = 0; i < inputLen; i += 16) {
-        char tmp[16];
-
-        ret = mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_DECRYPT, 16, iv, tmp,
-                                    *output + i);
-        if (ret != 0) {
-            LOGE("AES encrypt error!");
-            printError(ret);
-            break;
-        }
-
-        int left = inputLen - i;
-        if (left == 16) {
-            int padding = *(*output + inputLen - 1);
-            *outputLen = inputLen - padding;
-        }
+    int ret = mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_DECRYPT, inputLen, iv, input,
+                                    *output);
+    if (ret != 0) {
+        LOGE("AES encrypt error!");
+        printError(ret);
     }
+    *outputLen = inputLen - padding;
 
     mbedtls_aes_free(&ctx);
 
