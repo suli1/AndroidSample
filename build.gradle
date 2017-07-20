@@ -4,11 +4,16 @@ apply from: 'buildsystem/dependencies.gradle'
 
 buildscript {
   repositories {
+//    maven {
+//      url uri('/Users/suli//work/repo')
+//    }
+    mavenLocal()
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.2'
+    classpath 'com.android.tools.build:gradle:2.3.3'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    classpath 'com.qihoo360.replugin:replugin-host-gradle:2.1.3'
   }
 }
 

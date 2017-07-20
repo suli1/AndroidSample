@@ -40,4 +40,25 @@
       android:layout_height="wrap_content"
       android:text="加解密压测"
       />
+
+  <Button
+      android:id="@+id/btn_goto_plugin_app"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Go to plugin app"
+      />
+
+  <Button
+      android:id="@+id/btn_goto_plugin_demo1"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Go to plugin demo1"
+      />
+
+  <Button
+      android:id="@+id/btn_goto_plugin_share"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Go to plugin share"
+      />
 </LinearLayout>

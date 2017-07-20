@@ -94,8 +94,6 @@ import org.junit.runner.RunWith;
             EncryptUtils.ENCRYPT);
     Assert.assertEquals(MSG_ENCRYPT, EncodeUtils.base64Encode2String(msgNative));
 
-    Assert.assertEquals(MSG, );
-
     Assert.assertEquals(new String(
         EncryptUtils.crypt(msgNative, KEY.getBytes(), System.currentTimeMillis(),
             EncryptUtils.DECRYPT)), MSG);
