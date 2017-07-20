@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     //String encrypt =
     //    EncryptUtils.encryptBase64RSAByPublicKey(data, Constant.NORMAL_RSA_PUBLIC_KEY_JAVA);
     LogUtils.d("rsa encrypt:" + encrypt);
+    LogUtils.d("rsa encrypt len:" + encrypt.length());
     String decrypt =
         EncryptUtils.decryptBase64RSAByPrivateKey(encrypt, Constant.NORMAL_RSA_PRIVATE_KEY_JAVA);
     LogUtils.d("rsa decrypt " + (data.equals(decrypt) ? "success" : "failed") + " :" + decrypt);

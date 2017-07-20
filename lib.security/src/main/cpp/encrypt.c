@@ -7,20 +7,16 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <mbedtls/error.h>
-#include <string.h>
 #include <mbedtls/aes.h>
-#include "encrypt.h"
 #include "Log.h"
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t i;
 
-    if (rng_state != NULL)
-        rng_state = NULL;
-
+//    if (rng_state != NULL)
+//        rng_state = NULL;
     for (i = 0; i < len; ++i)
         output[i] = rand();
-
     return (0);
 }
 
@@ -41,7 +37,7 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
     mbedtls_pk_init(&pk);
 
     int ret;
-    ret = mbedtls_pk_parse_key(&pk, key, (size_t) keyLen, NULL, 0);
+    ret = mbedtls_pk_parse_public_key(&pk, key, (size_t) keyLen);
     if (ret != 0) {
         LOGE("RSA public key parse error");
         printError(ret);
@@ -50,8 +46,9 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
 
     rsa = mbedtls_pk_rsa(pk);
 
-    *output = (unsigned char *) malloc(1024);
-    *outputLen = 127;
+    *outputLen = mbedtls_pk_get_len(&pk);
+    *output = (unsigned char *) malloc(*outputLen);
+    memset(*output, 0, *outputLen);
     ret = mbedtls_rsa_pkcs1_encrypt(rsa, myrand, NULL, MBEDTLS_RSA_PUBLIC, inputLen, input,
                                     *output);
     if (ret != 0) {
@@ -66,7 +63,7 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
 }
 
 int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
-               const int inputLen, const unsigned char *key, const int keyLen) {
+                  const int inputLen, const unsigned char *key, const int keyLen) {
     mbedtls_aes_context ctx;
     mbedtls_aes_init(&ctx);
     mbedtls_aes_setkey_enc(&ctx, key, keyLen * 8);

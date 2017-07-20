@@ -10,7 +10,7 @@
 #define TARGET_CLASS "com/suli/lib/security/SecurityUtils"
 
 jbyteArray handleCryptoTemplates(JNIEnv *env,
-                                 int (*fun)(unsigned char **, int *, const unsigned char *,
+                                 int (*fun)(unsigned char *, int *, const unsigned char *,
                                             const int, const unsigned char *, const int),
                                  jbyteArray input_, jstring key_) {
     jbyte *input = (*env)->GetByteArrayElements(env, input_, 0);
@@ -25,7 +25,7 @@ jbyteArray handleCryptoTemplates(JNIEnv *env,
     unsigned char *output = NULL;
     int outputLen = 0;
     if (fun(&output, &outputLen, (unsigned char *) input, inputLen,
-            (unsigned char *) key, keyLen) == 0) {
+            (unsigned char *) key, keyLen + 1) == 0) {
         result = (*env)->NewByteArray(env, (jsize) outputLen);
         (*env)->SetByteArrayRegion(env, result, 0, (jsize) outputLen, (jbyte *) output);
     } else {

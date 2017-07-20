@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /Users/suli690/open-code/app/AndroidSample/replugin-host-lib/src/main/aidl/com/qihoo360/mobilesafe/svcmanager/IServiceChannel.aidl
+ * Original file: /Users/suli/work/learnning/AndroidSample/replugin-host-lib/src/main/aidl/com/qihoo360/mobilesafe/svcmanager/IServiceChannel.aidl
  */
 package com.qihoo360.mobilesafe.svcmanager;
 public interface IServiceChannel extends android.os.IInterface
