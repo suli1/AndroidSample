@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     System.loadLibrary("utils-lib");
   }
 
+  private final String data = "1990390u908";
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
@@ -36,11 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
   @OnClick(R.id.btn_aes) void onClickAES() {
     String key = "308340jf0l3933n9";
-    String data = RandomUtils.getRandomString((int) (Math.random() * 100));
+    LogUtils.d("data:" + data);
+    LogUtils.d("data len:" + data.length());
 
-    String aesEncrypt = SecurityUtils.encryptAES(data, key);
-    String aesDecrypt =
-        new String(EncryptUtils.decryptBase64AES(aesEncrypt.getBytes(), key.getBytes()));
+    String aesEncrypt = SecurityUtils.encryptAESBase64(data, key);
+    LogUtils.d("AES c:" + aesEncrypt);
+
+    String aesEncryptJava = EncryptUtils.encryptAES2Base64(data, key);
+    LogUtils.d("AES java:" + aesEncryptJava);
+    LogUtils.d("AES java len:" + aesEncryptJava.length());
+
+    String aesDecrypt = EncryptUtils.decryptBase64AES(aesEncrypt, key);
 
     if (!data.equals(aesDecrypt)) {
       LogUtils.d("aes failed:" + data);
@@ -50,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @OnClick(R.id.btn_rsa) void onClickRsa() {
-    String data = "1990390u908";
     String encrypt =
         SecurityUtils.encryptBase64RsaByPublicKey(data, Constant.NORMAL_RSA_PUBLIC_KEY);
     //String encrypt =

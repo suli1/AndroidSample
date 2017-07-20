@@ -738,6 +738,10 @@ public class EncryptUtils {
   private static final String AES_Transformation = "AES/CBC/PKCS5Padding";
   private static final String AES_Algorithm = "AES";
 
+  public static String encryptAES2Base64(String data, String key) {
+    return EncodeUtils.base64Encode2String(encryptAES(data.getBytes(), key.getBytes()));
+  }
+
   /**
    * AES加密后转为Base64编码
    *
@@ -758,6 +762,10 @@ public class EncryptUtils {
    */
   public static String encryptAES2HexString(byte[] data, byte[] key) {
     return bytes2HexString(encryptAES(data, key));
+  }
+
+  public static String decryptBase64AES(String data, String key) {
+    return new String(decryptBase64AES(data.getBytes(), key.getBytes()));
   }
 
   /**

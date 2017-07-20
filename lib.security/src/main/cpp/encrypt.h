@@ -14,4 +14,7 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
 int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
                   const int inputLen, const unsigned char *key, const int keyLen);
 
+int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
+                  const int inputLen, const unsigned char *key, const int keyLen);
+
 #endif //ANDROIDSAMPLE_ENCRYPT_H

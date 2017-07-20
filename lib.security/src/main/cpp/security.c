@@ -25,7 +25,7 @@ jbyteArray handleCryptoTemplates(JNIEnv *env,
     unsigned char *output = NULL;
     int outputLen = 0;
     if (fun(&output, &outputLen, (unsigned char *) input, inputLen,
-            (unsigned char *) key, keyLen + 1) == 0) {
+            (unsigned char *) key, keyLen) == 0) {
         result = (*env)->NewByteArray(env, (jsize) outputLen);
         (*env)->SetByteArrayRegion(env, result, 0, (jsize) outputLen, (jbyte *) output);
     } else {
@@ -41,7 +41,7 @@ jbyteArray handleCryptoTemplates(JNIEnv *env,
     return result;
 }
 
-jbyteArray encryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jbyteArray key_) {
+jbyteArray encryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jstring key_) {
     return handleCryptoTemplates(env, encryptAesCbc, input_, key_);
 }
 
@@ -51,7 +51,7 @@ jbyteArray encryptRsaByPublicKey(JNIEnv *env, jobject inistance, jbyteArray inpu
 
 
 static const JNINativeMethod gMethods[] = {
-        {"encryptAES",            "([B[B)[B",                 (void *) encryptAES},
+        {"encryptAES",            "([BLjava/lang/String;)[B", (void *) encryptAES},
         {"encryptRsaByPublicKey", "([BLjava/lang/String;)[B", (void *) encryptRsaByPublicKey},
 };
 

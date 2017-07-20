@@ -17,8 +17,10 @@ import org.junit.runner.RunWith;
   private final String data = "18664519382";
 
   @Test public void testAES() {
-    String encrypt = SecurityUtils.encryptAES(data, "1390dldml");
-    Assert.assertEquals("", encrypt);
+    String key = "12345678qwertyui"; // 16位
+    String encrypt = SecurityUtils.encryptAESBase64(data, key);
+    String decrypt = EncryptUtils.decryptBase64AES(encrypt, key);
+    Assert.assertEquals(data, decrypt);
   }
 
   @Test public void testRSA() {
