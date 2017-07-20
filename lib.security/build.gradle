@@ -1,16 +1,29 @@
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  def globalConfiguration = rootProject.ext
+
+  compileSdkVersion globalConfiguration.compileSdkVersion
+  buildToolsVersion globalConfiguration.buildToolsVersion
 
   defaultConfig {
-    minSdkVersion 15
-    targetSdkVersion 25
+    minSdkVersion globalConfiguration.minSdkVersion
+    targetSdkVersion globalConfiguration.targetSdkVersion
     versionCode 1
     versionName "1.0"
 
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    externalNativeBuild {
+      cmake {
+        cFlags ""
+        arguments "-DANDROID_PLATFORM=android-15"
+      }
+    }
+
+    ndk {
+      abiFilters 'armeabi', 'armeabi-v7a', 'x86'
+    }
   }
   buildTypes {
     release {
@@ -31,6 +44,8 @@ dependencies {
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:appcompat-v7:25.2.0'
   testCompile 'junit:junit:4.12'
+
+  compile project(':lib.utils')
 }

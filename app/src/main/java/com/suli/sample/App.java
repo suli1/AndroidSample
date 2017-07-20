@@ -1,6 +1,6 @@
 package com.suli.sample;
 
-import com.qihoo360.replugin.RePluginApplication;
+import android.app.Application;
 import com.suli.lib.utils.LogUtils;
 import com.suli.lib.utils.Utils;
 
@@ -9,7 +9,7 @@ import com.suli.lib.utils.Utils;
  * Application
  */
 
-public class App extends RePluginApplication {
+public class App extends Application {
 
   @Override public void onCreate() {
     super.onCreate();

@@ -1,5 +1,6 @@
 package com.suli.lib.utils;
 
+import android.text.TextUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -919,6 +920,10 @@ public class EncryptUtils {
   }
 
   public static String decryptBase64RSAByPrivateKey(String data, String key) {
+    if (TextUtils.isEmpty(data)) {
+      return "";
+    }
+
     try {
       byte[] keyBytes = EncodeUtils.base64Decode(key);
       PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);

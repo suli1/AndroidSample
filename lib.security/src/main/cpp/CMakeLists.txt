@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.4.1)
 project("mbed TLS" C)
 
 option(USE_PKCS11_HELPER_LIBRARY "Build mbed TLS with the pkcs11-helper library." OFF)
@@ -8,12 +8,7 @@ option(ENABLE_PROGRAMS "Build mbed TLS programs." ON)
 
 option(UNSAFE_BUILD "Allow unsafe builds. These builds ARE NOT SECURE." OFF)
 
-# the test suites currently have compile errors with MSVC
-if(MSVC)
-    option(ENABLE_TESTING "Build mbed TLS tests." OFF)
-else()
-    option(ENABLE_TESTING "Build mbed TLS tests." ON)
-endif()
+option(ENABLE_TESTING "Build mbed TLS tests." ON)
 
 # Warning string - created as a list for compatibility with CMake 2.8
 set(WARNING_BORDER "*******************************************************\n")
@@ -27,30 +22,6 @@ set(NULL_ENTROPY_WARNING "${WARNING_BORDER}"
                          "${NULL_ENTROPY_WARN_L3}"
                          "${WARNING_BORDER}")
 
-find_package(Perl)
-if(PERL_FOUND)
-
-    # If NULL Entropy is configured, display an appropriate warning
-    execute_process(COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/config.pl -f ${CMAKE_SOURCE_DIR}/include/mbedtls/config.h get MBEDTLS_TEST_NULL_ENTROPY
-                        RESULT_VARIABLE result)
-    if(${result} EQUAL 0)
-        message(WARNING ${NULL_ENTROPY_WARNING})
-
-        if(NOT UNSAFE_BUILD)
-            message(FATAL_ERROR "\
-\n\
-Warning! You have enabled MBEDTLS_TEST_NULL_ENTROPY. \
-This option is not safe for production use and negates all security \
-It is intended for development use only. \
-\n\
-To confirm you want to build with this option, re-run cmake with the \
-option: \n\
-  cmake -DUNSAFE_BUILD=ON ")
-
-            return()
-        endif()
-    endif()
-endif()
 
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
     CACHE STRING "Choose the type of build: None Debug Release Coverage ASan ASanDbg MemSan MemSanDbg Check CheckFull"
@@ -116,12 +87,13 @@ add_subdirectory(library)
 add_subdirectory(include)
 
 
-ADD_CUSTOM_TARGET(apidoc
-    COMMAND doxygen doxygen/mbedtls.doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(./*.h)
+
+file(GLOB src_security "./*.c")
 
 add_library( # Sets the name of the library.
-             security-lib
+             security
 
              # Sets the library as a shared library.
              SHARED
@@ -129,7 +101,7 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              # Associated headers in the same location as their source
              # file are automatically included.
-             security.c
+             ${src_security}
              )
 
 find_library( # Sets the name of the path variable.
@@ -140,8 +112,11 @@ find_library( # Sets the name of the path variable.
               log )
 
 target_link_libraries( # Specifies the target library.
-                       security-lib
+                       security
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib}
+
+                       mbedcrypto
+                       )

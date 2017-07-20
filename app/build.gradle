@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'replugin-host-gradle'
+//apply plugin: 'replugin-host-gradle'
 
 android {
   def globalConfiguration = rootProject.ext
@@ -16,6 +16,10 @@ android {
     versionName globalConfiguration.androidVersionName
 
     testInstrumentationRunner globalConfiguration.testInstrumentationRunner
+
+    ndk {
+      abiFilters 'armeabi-v7a', 'x86'
+    }
   }
 
   buildTypes {
@@ -32,7 +36,8 @@ dependencies {
   def developmentDependencies = rootProject.ext.developmentDependencies
 
   compile project(':lib.utils')
-  compile project(':replugin-host-lib')
+  compile project(':lib.security')
+//  compile project(':replugin-host-lib')
 
   compile fileTree(dir: 'libs', include: ['*.jar'])
 
