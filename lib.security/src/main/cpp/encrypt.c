@@ -9,8 +9,23 @@
 #include <mbedtls/error.h>
 #include <mbedtls/aes.h>
 #include <string.h>
+#include <mbedtls/base64.h>
 #include "Log.h"
 #include "encrypt.h"
+
+
+int base64Encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
+    mbedtls_base64_encode(NULL, 0, olen, src, slen);
+    *dst = (unsigned char *) malloc(*olen);
+    memset(*dst, 0, *olen);
+    mbedtls_base64_encode(dst, *olen, olen, src, slen);
+
+}
+
+int base64Decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
+
+}
+
 
 static int myrand(void *rng_state, unsigned char *output, size_t len) {
     size_t i;

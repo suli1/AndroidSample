@@ -8,6 +8,10 @@
 
 #include <stddef.h>
 
+int base64Encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
+
+int base64Decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
+
 #define AES_BLOCK_SIZE 16
 
 int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *input,
