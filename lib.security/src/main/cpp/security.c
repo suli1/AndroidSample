@@ -10,7 +10,7 @@
 #define TARGET_CLASS "com/suli/lib/security/SecurityUtils"
 
 jbyteArray handleCryptoTemplates(JNIEnv *env,
-                                 int (*fun)(unsigned char *, int *, const unsigned char *,
+                                 int (*fun)(unsigned char **, int *, const unsigned char *,
                                             const int, const unsigned char *, const int),
                                  jbyteArray input_, jstring key_) {
     jbyte *input = (*env)->GetByteArrayElements(env, input_, 0);
@@ -45,6 +45,10 @@ jbyteArray encryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jstring
     return handleCryptoTemplates(env, encryptAesCbc, input_, key_);
 }
 
+jbyteArray decryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jstring key_) {
+    return handleCryptoTemplates(env, decryptAesCbc, input_, key_);
+}
+
 jbyteArray encryptRsaByPublicKey(JNIEnv *env, jobject inistance, jbyteArray input_, jstring key_) {
     return handleCryptoTemplates(env, encryptRsaByPk, input_, key_);
 }
@@ -52,6 +56,7 @@ jbyteArray encryptRsaByPublicKey(JNIEnv *env, jobject inistance, jbyteArray inpu
 
 static const JNINativeMethod gMethods[] = {
         {"encryptAES",            "([BLjava/lang/String;)[B", (void *) encryptAES},
+        {"decryptAES",            "([BLjava/lang/String;)[B", (void *) decryptAES},
         {"encryptRsaByPublicKey", "([BLjava/lang/String;)[B", (void *) encryptRsaByPublicKey},
 };
 
@@ -70,13 +75,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
                                 sizeof(gMethods) / sizeof(gMethods[0])) != JNI_OK) {
         return -1;
     }
-    LOGI("JNI_OnLoad complete!");
-
     return JNI_VERSION_1_4;
 }
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
-    LOGI("JNI_OnUnload");
     JNIEnv *env = NULL;
     if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_4) != JNI_OK) {
         return;

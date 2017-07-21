@@ -19,7 +19,9 @@ import org.junit.runner.RunWith;
   @Test public void testAES() {
     String key = "12345678qwertyui"; // 16位
     String encrypt = SecurityUtils.encryptAESBase64(data, key);
-    String decrypt = EncryptUtils.decryptBase64AES(encrypt, key);
+    //String encrypt = EncryptUtils.encryptAES2Base64(data, key);
+    //String decrypt = EncryptUtils.decryptBase64AES(encrypt, key);
+    String decrypt = SecurityUtils.decryptAESBase64(encrypt, key);
     Assert.assertEquals(data, decrypt);
   }
 

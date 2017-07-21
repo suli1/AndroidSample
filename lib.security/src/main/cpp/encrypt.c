@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <mbedtls/error.h>
 #include <mbedtls/aes.h>
+#include <string.h>
 #include "Log.h"
 #include "encrypt.h"
 
@@ -99,18 +100,19 @@ int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
 
 int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
                   const int inputLen, const unsigned char *key, const int keyLen) {
-    if (keyLen != 16 || inputLen % AES_BLOCK_SIZE) {
+    if ((keyLen != 16) || (inputLen % AES_BLOCK_SIZE != 0)) {
         return -1;
     }
-    int padding = *(input + inputLen - 1);
 
     mbedtls_aes_context ctx;
     mbedtls_aes_init(&ctx);
-    mbedtls_aes_setkey_enc(&ctx, key, keyLen * 8);
+    mbedtls_aes_setkey_dec(&ctx, key, keyLen * 8);
+
     unsigned char iv[16];
     memcpy(iv, key, sizeof(iv));
 
     *output = (unsigned char *) malloc(inputLen);
+    memset(*output, 0, inputLen);
 
     int ret = mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_DECRYPT, inputLen, iv, input,
                                     *output);
@@ -118,6 +120,7 @@ int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
         LOGE("AES encrypt error!");
         printError(ret);
     }
+    int padding = *(*output + (inputLen - 1));
     *outputLen = inputLen - padding;
 
     mbedtls_aes_free(&ctx);

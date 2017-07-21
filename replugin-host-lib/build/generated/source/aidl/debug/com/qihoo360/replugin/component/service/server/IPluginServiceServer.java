@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /Users/suli/work/learnning/AndroidSample/replugin-host-lib/src/main/aidl/com/qihoo360/replugin/component/service/server/IPluginServiceServer.aidl
+ * Original file: /Users/suli690/open-code/app/AndroidSample/replugin-host-lib/src/main/aidl/com/qihoo360/replugin/component/service/server/IPluginServiceServer.aidl
  */
 package com.qihoo360.replugin.component.service.server;
 /**

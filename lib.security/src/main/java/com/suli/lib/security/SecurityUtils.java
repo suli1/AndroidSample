@@ -12,6 +12,10 @@ public class SecurityUtils {
     System.loadLibrary("security");
   }
 
+  public static String decryptAESBase64(String data, String key) {
+    return new String(decryptAES(EncodeUtils.base64Decode(data), key));
+  }
+
   public static String encryptAESBase64(String data, String key) {
     return EncodeUtils.base64Encode2String(encryptAES(data.getBytes(), key));
   }
@@ -21,6 +25,8 @@ public class SecurityUtils {
   }
 
   private static native byte[] encryptAES(byte[] data, String key);
+
+  private static native byte[] decryptAES(byte[] data, String key);
 
   private static native byte[] encryptRsaByPublicKey(byte[] data, String key);
 }

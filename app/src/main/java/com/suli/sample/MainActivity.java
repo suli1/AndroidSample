@@ -48,11 +48,18 @@ public class MainActivity extends AppCompatActivity {
     LogUtils.d("AES java len:" + aesEncryptJava.length());
 
     String aesDecrypt = EncryptUtils.decryptBase64AES(aesEncrypt, key);
+    String aesDecryptC = SecurityUtils.decryptAESBase64(aesEncrypt, key);
 
     if (!data.equals(aesDecrypt)) {
-      LogUtils.d("aes failed:" + data);
+      LogUtils.d("aes java decrypt failed:" + aesDecrypt);
     } else {
-      LogUtils.d("aes success:" + data);
+      LogUtils.d("aes java decrypt success:" + aesDecrypt);
+    }
+
+    if (!data.equals(aesDecryptC)) {
+      LogUtils.d("aes c decrypt failed:" + aesDecryptC);
+    } else {
+      LogUtils.d("aes c decrypt success:" +aesDecryptC);
     }
   }
 
