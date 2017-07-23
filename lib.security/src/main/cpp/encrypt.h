@@ -8,19 +8,23 @@
 
 #include <stddef.h>
 
-int base64Encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
+void md5(const unsigned char *src, size_t slen, unsigned char output[16]);
 
-int base64Decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
+void sha1(const unsigned char *src, size_t slen, unsigned char output[20]);
+
+int base64_encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
+
+int base64_decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen);
 
 #define AES_BLOCK_SIZE 16
 
-int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *input,
-                   const int inputLen, const unsigned char *key, const int keyLen);
+int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned char *input,
+                       const int inputLen, const unsigned char *key, const int keyLen);
 
-int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                  const int inputLen, const unsigned char *key, const int keyLen);
+int encrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
+                    const int inputLen, const unsigned char *key, const int keyLen);
 
-int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                  const int inputLen, const unsigned char *key, const int keyLen);
+int decrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
+                    const int inputLen, const unsigned char *key, const int keyLen);
 
 #endif //ANDROIDSAMPLE_ENCRYPT_H

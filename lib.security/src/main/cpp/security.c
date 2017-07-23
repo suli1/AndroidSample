@@ -9,6 +9,80 @@
 
 #define TARGET_CLASS "com/suli/lib/security/SecurityUtils"
 
+jstring md5_jni(JNIEnv *env, jobject instance, jstring input_) {
+    const char *input = (*env)->GetStringUTFChars(env, input_, 0);
+    jsize inputLen = (*env)->GetStringUTFLength(env, input_);
+
+    unsigned char output[33];
+    md5((const unsigned char *) input, (size_t) inputLen, output);
+    jstring result = (*env)->NewStringUTF(env, output);
+
+    (*env)->ReleaseStringUTFChars(env, input_, input);
+
+    return result;
+}
+
+jstring sha1_jni(JNIEnv *env, jobject instance, jstring input_) {
+    const char *input = (*env)->GetStringUTFChars(env, input_, 0);
+    jsize inputLen = (*env)->GetStringUTFLength(env, input_);
+
+    unsigned char output[41];
+    sha1((const unsigned char *) input, (size_t) inputLen, output);
+    jstring result = (*env)->NewStringUTF(env, output);
+
+    (*env)->ReleaseStringUTFChars(env, input_, input);
+
+    return result;
+}
+
+
+jbyteArray base64Encode(JNIEnv *env, jobject instance, jbyteArray input_) {
+    jbyte *input = (*env)->GetByteArrayElements(env, input_, 0);
+    jsize inputLen = (*env)->GetArrayLength(env, input_);
+
+    jbyteArray result;
+    unsigned char *output = NULL;
+    size_t outputLen = 0;
+    if (base64_encode(&output, &outputLen, input, inputLen) == 0) {
+        result = (*env)->NewByteArray(env, (jsize) outputLen);
+        (*env)->SetByteArrayRegion(env, result, 0, (jsize) outputLen, (jbyte *) output);
+    } else {
+        result = (*env)->NewByteArray(env, 0);
+    }
+
+    if (output != NULL) {
+        free(output);
+    }
+
+    (*env)->ReleaseByteArrayElements(env, input_, input, 0);
+
+    return result;
+}
+
+jbyteArray base64Decode(JNIEnv *env, jobject instance, jbyteArray input_) {
+    jbyte *input = (*env)->GetByteArrayElements(env, input_, 0);
+    jsize inputLen = (*env)->GetArrayLength(env, input_);
+
+    jbyteArray result;
+    unsigned char *output = NULL;
+    size_t outputLen = 0;
+    if (base64_decode(&output, &outputLen, input, inputLen) == 0) {
+        result = (*env)->NewByteArray(env, (jsize) outputLen);
+        (*env)->SetByteArrayRegion(env, result, 0, (jsize) outputLen, (jbyte *) output);
+    } else {
+        result = (*env)->NewByteArray(env, 0);
+    }
+
+    if (output != NULL) {
+        free(output);
+    }
+
+    (*env)->ReleaseByteArrayElements(env, input_, input, 0);
+
+    return result;
+}
+
+
 jbyteArray handleCryptoTemplates(JNIEnv *env,
                                  int (*fun)(unsigned char **, int *, const unsigned char *,
                                             const int, const unsigned char *, const int),
@@ -42,22 +116,26 @@ jbyteArray handleCryptoTemplates(JNIEnv *env,
 }
 
 jbyteArray encryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jstring key_) {
-    return handleCryptoTemplates(env, encryptAesCbc, input_, key_);
+    return handleCryptoTemplates(env, encrypt_aes_cbc, input_, key_);
 }
 
 jbyteArray decryptAES(JNIEnv *env, jobject instantce, jbyteArray input_, jstring key_) {
-    return handleCryptoTemplates(env, decryptAesCbc, input_, key_);
+    return handleCryptoTemplates(env, decrypt_aes_cbc, input_, key_);
 }
 
 jbyteArray encryptRsaByPublicKey(JNIEnv *env, jobject inistance, jbyteArray input_, jstring key_) {
-    return handleCryptoTemplates(env, encryptRsaByPk, input_, key_);
+    return handleCryptoTemplates(env, encrypt_rsa_public, input_, key_);
 }
 
 
 static const JNINativeMethod gMethods[] = {
-        {"encryptAES",            "([BLjava/lang/String;)[B", (void *) encryptAES},
-        {"decryptAES",            "([BLjava/lang/String;)[B", (void *) decryptAES},
-        {"encryptRsaByPublicKey", "([BLjava/lang/String;)[B", (void *) encryptRsaByPublicKey},
+        {"md5",                   "(Ljava/lang/String;)Ljava/lang/String;", (void *) md5_jni},
+        {"sha1",                  "(Ljava/lang/String;)Ljava/lang/String;", (void *) sha1_jni},
+        {"base64Encode",          "([B)[B",                                 (void *) base64Encode},
+        {"base64Decode",          "([B)[B",                                 (void *) base64Decode},
+        {"encryptAES",            "([BLjava/lang/String;)[B",               (void *) encryptAES},
+        {"decryptAES",            "([BLjava/lang/String;)[B",               (void *) decryptAES},
+        {"encryptRsaByPublicKey", "([BLjava/lang/String;)[B",               (void *) encryptRsaByPublicKey},
 };
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {

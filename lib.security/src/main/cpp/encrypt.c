@@ -8,22 +8,46 @@
 #include <stdlib.h>
 #include <mbedtls/error.h>
 #include <mbedtls/aes.h>
-#include <string.h>
 #include <mbedtls/base64.h>
+#include <mbedtls/md5.h>
+#include <mbedtls/sha1.h>
 #include "Log.h"
 #include "encrypt.h"
 
 
-int base64Encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
-    mbedtls_base64_encode(NULL, 0, olen, src, slen);
-    *dst = (unsigned char *) malloc(*olen);
-    memset(*dst, 0, *olen);
-    mbedtls_base64_encode(dst, *olen, olen, src, slen);
-
+void md5(const unsigned char *src, size_t slen, unsigned char output[33]) {
+    unsigned char out[16];
+    mbedtls_md5(src, slen, out);
+    for (int i = 0; i < 16; i++) {
+        char ch[2];
+        sprintf(ch, "%02X", out[i]);
+        memcpy(output + (i * 2), ch, 2);
+    }
+    output[32] = '\0';
 }
 
-int base64Decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
+void sha1(const unsigned char *src, size_t slen, unsigned char output[41]) {
+    unsigned char out[20];
+    mbedtls_sha1(src, slen, out);
+    for (int i = 0; i < 20; i++) {
+        char ch[2];
+        sprintf(ch, "%02X", out[i]);
+        memcpy(output + (i * 2), ch, 2);
+    }
+    output[40] = '\0';
+}
 
+
+int base64_encode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
+    mbedtls_base64_encode(NULL, 0, olen, src, slen);
+    *dst = (unsigned char *) malloc(*olen);
+    return mbedtls_base64_encode(*dst, *olen, olen, src, slen);
+}
+
+int base64_decode(unsigned char **dst, size_t *olen, const unsigned char *src, size_t slen) {
+    mbedtls_base64_decode(NULL, 0, olen, src, slen);
+    *dst = (unsigned char *) malloc(*olen);
+    return mbedtls_base64_decode(*dst, *olen, olen, src, slen);
 }
 
 
@@ -37,15 +61,15 @@ static int myrand(void *rng_state, unsigned char *output, size_t len) {
     return (0);
 }
 
-void printError(int errorCode) {
+void print_error(int errorCode) {
     char buffer[256];
     memset(buffer, 0, sizeof(buffer));
     mbedtls_strerror(errorCode, buffer, 256);
     LOGE("%s", buffer);
 }
 
-int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *input,
-                   const int inputLen, const unsigned char *key, const int keyLen) {
+int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned char *input,
+                       const int inputLen, const unsigned char *key, const int keyLen) {
     mbedtls_pk_context pk;
     mbedtls_rsa_context *rsa;
 
@@ -55,7 +79,7 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
     ret = mbedtls_pk_parse_public_key(&pk, key, (size_t) keyLen + 1);
     if (ret != 0) {
         LOGE("RSA public key parse error");
-        printError(ret);
+        print_error(ret);
         return -1;
     }
 
@@ -68,7 +92,7 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
                                     *output);
     if (ret != 0) {
         LOGE("RSA public encrypt error");
-        printError(ret);
+        print_error(ret);
     }
 
     mbedtls_pk_free(&pk);
@@ -77,8 +101,8 @@ int encryptRsaByPk(unsigned char **output, int *outputLen, const unsigned char *
     return ret;
 }
 
-int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                  const int inputLen, const unsigned char *key, const int keyLen) {
+int encrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
+                    const int inputLen, const unsigned char *key, const int keyLen) {
     if (keyLen != 16) {
         return -1;
     }
@@ -104,7 +128,7 @@ int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
                                     *output);
     if (ret != 0) {
         LOGE("AES encrypt error!");
-        printError(ret);
+        print_error(ret);
     }
 
     free(src);
@@ -113,8 +137,8 @@ int encryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
     return ret;
 }
 
-int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                  const int inputLen, const unsigned char *key, const int keyLen) {
+int decrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
+                    const int inputLen, const unsigned char *key, const int keyLen) {
     if ((keyLen != 16) || (inputLen % AES_BLOCK_SIZE != 0)) {
         return -1;
     }
@@ -133,7 +157,7 @@ int decryptAesCbc(unsigned char **output, int *outputLen, const unsigned char *i
                                     *output);
     if (ret != 0) {
         LOGE("AES encrypt error!");
-        printError(ret);
+        print_error(ret);
     }
     int padding = *(*output + (inputLen - 1));
     *outputLen = inputLen - padding;
