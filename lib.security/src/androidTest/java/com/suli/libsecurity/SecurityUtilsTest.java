@@ -5,6 +5,7 @@ import com.suli.lib.security.Constant;
 import com.suli.lib.security.SecurityUtils;
 import com.suli.lib.utils.EncodeUtils;
 import com.suli.lib.utils.EncryptUtils;
+import com.suli.lib.utils.RandomUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ import org.junit.runner.RunWith;
   }
 
   @Test public void testRSA() {
+    String data = RandomUtils.getRandomString(117);
     String encrypt =
         SecurityUtils.encryptBase64RsaByPublicKey(data, Constant.NORMAL_RSA_PUBLIC_KEY);
     String decrypt =

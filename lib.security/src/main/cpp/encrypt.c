@@ -11,6 +11,7 @@
 #include <mbedtls/base64.h>
 #include <mbedtls/md5.h>
 #include <mbedtls/sha1.h>
+#include <string.h>
 #include "Log.h"
 #include "encrypt.h"
 
@@ -102,7 +103,7 @@ int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned ch
 }
 
 int encrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                    const int inputLen, const unsigned char *key, const int keyLen) {
+                    const int inputLen, const unsigned char *key, const unsigned int keyLen) {
     if (keyLen != 16) {
         return -1;
     }
@@ -138,7 +139,7 @@ int encrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char 
 }
 
 int decrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char *input,
-                    const int inputLen, const unsigned char *key, const int keyLen) {
+                    const int inputLen, const unsigned char *key, const unsigned int keyLen) {
     if ((keyLen != 16) || (inputLen % AES_BLOCK_SIZE != 0)) {
         return -1;
     }
