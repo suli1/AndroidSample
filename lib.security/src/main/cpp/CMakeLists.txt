@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.4.1)
+# mbedtls-2.5.1
 project("mbed TLS" C)
 
 option(USE_PKCS11_HELPER_LIBRARY "Build mbed TLS with the pkcs11-helper library." OFF)

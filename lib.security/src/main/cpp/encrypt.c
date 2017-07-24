@@ -6,7 +6,6 @@
 #include <mbedtls/pk.h>
 #include <malloc.h>
 #include <stdlib.h>
-#include <mbedtls/error.h>
 #include <mbedtls/aes.h>
 #include <mbedtls/base64.h>
 #include <mbedtls/md5.h>
@@ -62,12 +61,12 @@ static int myrand(void *rng_state, unsigned char *output, size_t len) {
     return (0);
 }
 
-void print_error(int errorCode) {
-    char buffer[256];
-    memset(buffer, 0, sizeof(buffer));
-    mbedtls_strerror(errorCode, buffer, 256);
-    LOGE("%s", buffer);
-}
+//void print_error(int errorCode) {
+//    char buffer[256];
+//    memset(buffer, 0, sizeof(buffer));
+//    mbedtls_strerror(errorCode, buffer, 256);
+//    LOGE("%s", buffer);
+//}
 
 int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned char *input,
                        const int inputLen, const unsigned char *key, const int keyLen) {
@@ -79,8 +78,9 @@ int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned ch
     int ret;
     ret = mbedtls_pk_parse_public_key(&pk, key, (size_t) keyLen + 1);
     if (ret != 0) {
+        mbedtls_pk_free(&pk);
         LOGE("RSA public key parse error");
-        print_error(ret);
+//        print_error(ret);
         return -1;
     }
 
@@ -93,7 +93,7 @@ int encrypt_rsa_public(unsigned char **output, int *outputLen, const unsigned ch
                                     *output);
     if (ret != 0) {
         LOGE("RSA public encrypt error");
-        print_error(ret);
+//        print_error(ret);
     }
 
     mbedtls_pk_free(&pk);
@@ -129,7 +129,7 @@ int encrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char 
                                     *output);
     if (ret != 0) {
         LOGE("AES encrypt error!");
-        print_error(ret);
+//        print_error(ret);
     }
 
     free(src);
@@ -158,7 +158,7 @@ int decrypt_aes_cbc(unsigned char **output, int *outputLen, const unsigned char 
                                     *output);
     if (ret != 0) {
         LOGE("AES encrypt error!");
-        print_error(ret);
+//        print_error(ret);
     }
     int padding = *(*output + (inputLen - 1));
     *outputLen = inputLen - padding;
